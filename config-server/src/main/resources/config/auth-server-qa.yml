@@ -1,0 +1,11 @@
+build:
+  version: "2.0"
+
+auth-server:
+  message: "Hello from auth-server"
+  contactDetails:
+    name: "auth-server qa"
+    email: "auth-server-qa@localhost"
+    onCallSupport:
+      -(011)1234589
+      -(011)1234580

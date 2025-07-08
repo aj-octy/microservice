@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: git
+  cloud:
+    config:
+      server:
+        #native:
+          #search-locations: "classpath:/config"
+        git:
+          uri: "https://github.com/aj-octy/config-server-files.git"
+          default-label: main
+          timeout: 5
+          clone-on-start: true
+          force-pull: true
+          basedir: /tmp/config-repo
+
+encrypt:
+  key: "875GHMBJSK98769759GJH768KJ79"
+
+server:
+  port: 8071
+
+logging:
+  level:
+    org.springframework.cloud.config.server.environment: DEBUG

@@ -1,0 +1,11 @@
+build:
+  version: "2.0"
+
+auth-server:
+  message: "Hello from auth-server 1"
+  contactDetails:
+    name: "auth-server"
+    email: "auth-server@localhost"
+    onCallSupport:
+      -(011)1234589
+      -(011)1234580

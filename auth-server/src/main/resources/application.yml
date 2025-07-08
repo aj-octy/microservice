@@ -1,0 +1,18 @@
+server:
+  port: 8090
+spring:
+  application:
+    name: "auth-server"
+  profiles:
+    active: "prod"
+  config:
+    import: "optional:configserver:http://localhost:8071"
+build:
+  version: "1.0.0"
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
