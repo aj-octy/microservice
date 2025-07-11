@@ -15,7 +15,7 @@ x-microservice-base-config: &microservice-base-config
       limits:
         memory: 700m
   environment:
-    SPRING_RABBITMQ_HOST: "rabbit"
+    SPRING_RABBITMQ_HOST: "rabbitmq"
 
 x-microservice-configserver-config: &microservice-configserver-config
   <<: *microservice-base-config
