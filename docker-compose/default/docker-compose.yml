@@ -1,0 +1,81 @@
+version: "3.9"
+
+# ───────────────────────────────
+# Reusable config blocks (like services in common-config.yml)
+# ───────────────────────────────
+
+x-network-deploy-service: &network-deploy-service
+  networks:
+    - socialapp
+
+x-microservice-base-config: &microservice-base-config
+  <<: *network-deploy-service
+  deploy:
+    resources:
+      limits:
+        memory: 700m
+  environment:
+    SPRING_RABBITMQ_HOST: "rabbit"
+
+x-microservice-configserver-config: &microservice-configserver-config
+  <<: *microservice-base-config
+  environment:
+    SPRING_PROFILES_ACTIVE: default
+    SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+  depends_on:
+    configserver:
+      condition: service_healthy
+
+# ───────────────────────────────
+# Actual services
+# ───────────────────────────────
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: socialapp-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    <<: *network-deploy-service
+
+  configserver:
+    build: ../../config-server
+    image: ${DOCKER_USER}/configserver:${VERSION}
+    container_name: socialapp-configserver
+    ports:
+      - "8071:8071"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    <<: *microservice-base-config
+
+  auth-server:
+    build: ../../auth-server
+    image: ${DOCKER_USER}/auth-server:${VERSION}
+    container_name: socialapp-auth-server
+    ports:
+      - "8090:8090"
+    environment:
+      SPRING_APPLICATION_NAME: "auth-server"
+    <<: *microservice-configserver-config
+
+# ───────────────────────────────
+# Networks
+# ───────────────────────────────
+
+networks:
+  socialapp:
+    driver: bridge
