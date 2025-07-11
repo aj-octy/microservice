@@ -8,6 +8,16 @@ x-network-deploy-service: &network-deploy-service
   networks:
     - socialapp
 
+x-microservice-db-config: &microservice-db-config
+  <<: *network-deploy-service
+  image: mysql:8.0
+  healthcheck:
+    test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+    interval: 10s
+    timeout: 5s
+    retries: 10
+    start_period: 10s
+
 x-microservice-base-config: &microservice-base-config
   <<: *network-deploy-service
   deploy:
@@ -22,6 +32,8 @@ x-microservice-configserver-config: &microservice-configserver-config
   environment:
     SPRING_PROFILES_ACTIVE: default
     SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+    SPRING_DATASOURCE_USERNAME: root
+    SPRING_DATASOURCE_PASSWORD: root
   depends_on:
     configserver:
       condition: service_healthy
@@ -31,6 +43,16 @@ x-microservice-configserver-config: &microservice-configserver-config
 # ───────────────────────────────
 
 services:
+
+  auth-server-db:
+    container_name: auth-db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: authdb
+    <<: *microservice-db-config
+
   rabbitmq:
     image: rabbitmq:3.12-management
     container_name: socialapp-rabbitmq
@@ -70,6 +92,10 @@ services:
       - "8090:8090"
     environment:
       SPRING_APPLICATION_NAME: "auth-server"
+      SPRING_DATASOURCE_URL: jdbc:mysql://auth-server-db:3306/authdb
+    depends_on:
+      auth-server-db:
+        condition: service_healthy
     <<: *microservice-configserver-config
 
 # ───────────────────────────────
