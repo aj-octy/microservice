@@ -93,6 +93,8 @@ services:
     environment:
       SPRING_APPLICATION_NAME: "auth-server"
       SPRING_DATASOURCE_URL: jdbc:mysql://auth-server-db:3306/authdb
+      SPRING_RABBITMQ_HOST: "rabbitmq"
+      SPRING_RABBITMQ_PORT: 5672
     depends_on:
       auth-server-db:
         condition: service_healthy
