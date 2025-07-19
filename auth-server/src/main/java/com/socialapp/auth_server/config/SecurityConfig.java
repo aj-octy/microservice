@@ -23,27 +23,20 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(
-//                                "/auth/**",           // already public
-//                                "/auth/register",     // already public
-//                                "/build-info",        // allow access
-//                                "/build-infos",       // allow access
-//                                "/contact-info",      // allow access
-//                                "/test1",              // allow access
-//                                "/actuator/**"        // allow Spring Boot actuator endpoints
-//                        ).permitAll()
-//                        .anyRequest().authenticated() // everything else requires auth
-//                )
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll()
-                .anyRequest().authenticated()
-        )
+                        .requestMatchers(
+                                "/auth/**",
+                                "/actuator/health",
+                                "/actuator/health/**"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 
 
     @Bean

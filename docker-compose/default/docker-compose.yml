@@ -98,6 +98,12 @@ services:
     depends_on:
       auth-server-db:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8090/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     <<: *microservice-configserver-config
 
   api-gateway:
