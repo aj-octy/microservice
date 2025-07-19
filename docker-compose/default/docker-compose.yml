@@ -93,10 +93,30 @@ services:
     environment:
       SPRING_APPLICATION_NAME: "auth-server"
       SPRING_DATASOURCE_URL: jdbc:mysql://auth-server-db:3306/authdb
+      SPRING_RABBITMQ_HOST: "rabbitmq"
+      SPRING_RABBITMQ_PORT: 5672
     depends_on:
       auth-server-db:
         condition: service_healthy
     <<: *microservice-configserver-config
+
+  api-gateway:
+    build: ../../gateway-server
+    image: ${DOCKER_USER}/gateway-server:${VERSION}
+    container_name: socialapp-api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_APPLICATION_NAME: "api-gateway"
+      SPRING_PROFILES_ACTIVE: default
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+    depends_on:
+      configserver:
+        condition: service_healthy
+      auth-server:
+        condition: service_healthy
+    <<: *microservice-base-config
+
 
 # ───────────────────────────────
 # Networks

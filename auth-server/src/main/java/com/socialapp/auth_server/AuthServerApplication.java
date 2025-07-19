@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.socialapp.auth_server")
 @EnableConfigurationProperties(AuthServerContactInfoDto.class)
 public class AuthServerApplication {
 

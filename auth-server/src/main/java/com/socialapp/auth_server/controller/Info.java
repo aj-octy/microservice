@@ -1,4 +1,4 @@
-package com.socialapp.auth_server;
+package com.socialapp.auth_server.controller;
 
 import com.socialapp.auth_server.dto.AuthServerContactInfoDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,4 +28,8 @@ public class Info {
         public ResponseEntity<AuthServerContactInfoDto> getContactInfo() {
                 return ResponseEntity.ok(authServerContactInfoDto);
         }
+//        @GetMapping("/test")
+//        public String test() {
+//                return "Auth server is running!";
+//        }
 }
